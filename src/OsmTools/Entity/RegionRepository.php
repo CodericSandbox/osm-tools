@@ -11,8 +11,9 @@ use Vrok\Doctrine\EntityRepository;
 
 /**
  * Holds functions to work with and manage regions.
+ * @todo necessary? only used function is updateInstance in Service\Reader,
+ * replace with the direct call to the DoctrineModule\Hydrator
  */
 class RegionRepository extends EntityRepository
 {
-    use \Vrok\Doctrine\Traits\GetById;
 }

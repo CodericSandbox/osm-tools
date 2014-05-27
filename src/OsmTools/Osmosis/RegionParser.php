@@ -39,14 +39,10 @@ class RegionParser
      */
     public function insertRegion($relation)
     {
-        $name = isset($relation['names']['name:de'])
-            ? $relation['names']['name:de']
-            : (isset($relation['names']['name'])
-                ? $relation['names']['name']
-                : '--');
-
+        // @todo insert translation entries for the other 'names' entries
         $data = array(
-            'name'       => $name,
+            'name'       => $relation['names']['name'],
+            'relationId' => $relation['relationId'],
             'adminLevel' => $relation['adminLevel'],
         );
 
@@ -63,7 +59,7 @@ class RegionParser
         $region = new \OsmTools\Entity\Region();
         $repository = $this->entityManager
                 ->getRepository('OsmTools\Entity\Region');
-        $repository->updateInstance($region, $data);
+        $region = $repository->updateInstance($region, $data);
 
         return $region;
     }

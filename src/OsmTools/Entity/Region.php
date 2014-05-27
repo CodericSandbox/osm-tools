@@ -10,16 +10,15 @@ namespace OsmTools\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Vrok\Doctrine\Entity;
 
 /**
  * Defines a geographic region in a hierarchical context.
  *
  * @ORM\Entity
- * @ORM\Table(name="regions")
+ * @ORM\Table(name="regions", uniqueConstraints={@ORM\UniqueConstraint(name="type_id", columns={"osmType", "osmId"})})
  * @ORM\Entity(repositoryClass="OsmTools\Entity\RegionRepository")
  */
-class Region extends Entity
+class Region
 {
     /**
      * Initialize collection for lazy loading.
@@ -30,48 +29,99 @@ class Region extends Entity
     }
 
     /**
-     * Retrieve the child level to query for when retrieving the child regions.
+     * Used for debugging, e.g. in Doctrines exception messages.
      *
-     * @todo save in an extra field as JSON, inherit from the parent
-     * @return int|null
+     * @return string
      */
-    public function getChildLevel()
+    public function __toString()
     {
-         switch($this->adminLevel) {
-             case 2:  return 4;
-             case 4:  return 6;
-             case 6:  return 8;
-             case 8:  return 9;
-             default: return null;
-         }
+        return $this->getName().' ('.$this->getOsmType().'-'.$this->getOsmId().')';
     }
 
-// <editor-fold defaultstate="collapsed" desc="relationId">
+// <editor-fold defaultstate="collapsed" desc="id">
     /**
      * @ORM\Id
-     * @ORM\Column(type="integer", nullable=false, unique=true)
+     * @ORM\Column(type="string", length=255, nullable=false, unique=true)
      */
-    protected $relationId;
+    protected $id;
 
     /**
-     * Returns the regions OSM relation ID.
+     * Returns the regions ID.
      *
-     * @return integer
+     * @return string
      */
-    public function getRelationId()
+    public function getId()
     {
-        return $this->relationId;
+        return $this->id;
     }
 
     /**
-     * Sets the regions OSM relation ID.
+     * Sets the regions ID.
      *
-     * @param integer $relationId
+     * @param string $id
      * @return self
      */
-    public function setRelationId($relationId)
+    public function setId($id)
     {
-        $this->relationId = $relationId;
+        $this->id = $id;
+        return $this;
+    }
+// </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="osmId">
+    /**
+     * @ORM\Column(type="bigint", nullable=false)
+     */
+    protected $osmId;
+
+    /**
+     * Returns the regions OSM ID.
+     *
+     * @return string
+     */
+    public function getOsmId()
+    {
+        return $this->osmId;
+    }
+
+    /**
+     * Sets the regions OSM ID.
+     *
+     * @param string $osmId
+     * @return self
+     */
+    public function setOsmId($osmId)
+    {
+        $this->osmId = $osmId;
+        $this->setId($this->osmType.'-'.$this->osmId);
+        return $this;
+    }
+// </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="osmType">
+    /**
+     * @ORM\Column(type="string", length=20, nullable=false)
+     */
+    protected $osmType;
+
+    /**
+     * Returns the regions OSM type.
+     *
+     * @return string
+     */
+    public function getOsmType()
+    {
+        return $this->osmType;
+    }
+
+    /**
+     * Sets the regions OSM type.
+     *
+     * @param string $osmType
+     * @return self
+     */
+    public function setOsmType($osmType)
+    {
+        $this->osmType = $osmType;
+        $this->setId($this->osmType.'-'.$this->osmId);
         return $this;
     }
 // </editor-fold>
@@ -104,10 +154,94 @@ class Region extends Entity
         return $this;
     }
 // </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="rank">
+    /**
+     * @ORM\Column(type="integer", nullable=false, unique=false)
+     */
+    protected $rank;
+
+    /**
+     * Returns the regions Nominatim address rank.
+     *
+     * @return integer
+     */
+    public function getRank()
+    {
+        return $this->rank;
+    }
+
+    /**
+     * Sets the regions Nominatim address rank.
+     *
+     * @param integer $rank
+     * @return self
+     */
+    public function setRank($rank)
+    {
+        $this->rank = $rank;
+        return $this;
+    }
+// </editor-fold>
+// // <editor-fold defaultstate="collapsed" desc="adminLevel">
+    /**
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    protected $adminLevel;
+
+    /**
+     * Returns the regions OSM admin_level.
+     *
+     * @return integer
+     */
+    public function getAdminLevel()
+    {
+        return $this->adminLevel;
+    }
+
+    /**
+     * Sets the regions OSM admin_level.
+     *
+     * @param integer $adminLevel
+     * @return self
+     */
+    public function setAdminLevel($adminLevel)
+    {
+        $this->adminLevel = $adminLevel;
+        return $this;
+    }
+// </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="type">
+    /**
+     * @ORM\Column(type="string", length=20, nullable=false)
+     */
+    protected $type;
+
+    /**
+     * Returns the regions Nominatim defined type.
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Sets the regions Nominatim defined type.
+     *
+     * @param string $type
+     * @return self
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="parent">
     /**
      * @ORM\ManyToOne(targetEntity="Region", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE"),
      */
     protected $parent;
 
@@ -129,7 +263,13 @@ class Region extends Entity
      */
     public function setParent(Region $parent = null)
     {
-        if ($this->parent && $this->parent !== $parent) {
+        // this parent is already set, avoid infinite loops by calling
+        // parent->addChild thus calling parent->child->setParent
+        if ($this->parent === $parent) {
+            return $this;
+        }
+
+        if ($this->parent) {
             $this->parent->removeChild($this);
         }
 
@@ -143,8 +283,8 @@ class Region extends Entity
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="children">
     /**
-     * @ORM\OneToMany(targetEntity="Region", mappedBy="parent")
-     * */
+     * @ORM\OneToMany(targetEntity="Region", mappedBy="parent", fetch="EXTRA_LAZY")
+     */
     protected $children;
 
     /**
@@ -170,6 +310,7 @@ class Region extends Entity
         if ($this->children->contains($child)) {
             return false;
         }
+        $child->setParent($this);
         return $this->children->add($child);
     }
 
@@ -183,6 +324,9 @@ class Region extends Entity
      */
     public function removeChild(Region $child)
     {
+        if ($this->children->contains($child)) {
+            $child->setParent(null);
+        }
         return $this->children->removeElement($child);
     }
 
@@ -209,62 +353,25 @@ class Region extends Entity
             $this->removeChild($child);
         }
     }
-// </editor-fold>
-// <editor-fold defaultstate="collapsed" desc="adminLevel">
-    /**
-     * @ORM\Column(type="integer", nullable=false, unique=false)
-     */
-    protected $adminLevel;
 
     /**
-     * Returns the regions OSM admin_level.
-     *
-     * @return integer
-     */
-    public function getAdminLevel()
-    {
-        return $this->adminLevel;
-    }
-
-    /**
-     * Sets the regions OSM admin_level.
-     *
-     * @param integer $adminLevel
-     * @return self
-     */
-    public function setAdminLevel($adminLevel)
-    {
-        $this->adminLevel = $adminLevel;
-        return $this;
-    }
-// </editor-fold>
-// <editor-fold defaultstate="collapsed" desc="isParsed">
-    /**
-     * @var bool
-     * @ORM\Column(type="boolean", nullable=false)
-     */
-    protected $isParsed = false;
-
-    /**
-     * Returns wether the region is completely parsed.
+     * Retúrns true if the region has children, else false.
      *
      * @return bool
      */
-    public function getIsParsed()
+    public function hasChildren()
     {
-        return $this->isParsed;
+        return (bool)$this->getChildCount();
     }
 
     /**
-     * Sets wether the regions is completely parsed.
+     * Returns the number of children this region has.
      *
-     * @param bool $isParsed
-     * @return self
+     * @return int
      */
-    public function setIsParsed($isParsed)
+    public function getChildCount()
     {
-        $this->isParsed = (bool) $isParsed;
-        return $this;
+        return $this->children->count();
     }
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="pbfUrl">
@@ -322,6 +429,35 @@ class Region extends Entity
     public function setPolygonFile($polygonFile)
     {
         $this->polygonFile = $polygonFile;
+        return $this;
+    }
+// </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="isParsed">
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean", nullable=false)
+     */
+    protected $isParsed = false;
+
+    /**
+     * Returns wether the region is completely parsed.
+     *
+     * @return bool
+     */
+    public function getIsParsed()
+    {
+        return $this->isParsed;
+    }
+
+    /**
+     * Sets wether the regions is completely parsed.
+     *
+     * @param bool $isParsed
+     * @return self
+     */
+    public function setIsParsed($isParsed)
+    {
+        $this->isParsed = (bool) $isParsed;
         return $this;
     }
 // </editor-fold>

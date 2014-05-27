@@ -1,0 +1,21 @@
+<?php
+    $this->headScript()
+        ->appendFile($this->basePath().'/jstree/libs/jquery.js')
+        ->appendFile($this->basePath().'/jstree/jstree.min.js')
+        ->appendFile($this->basePath().'/osm-tools/osm-tools.js');
+
+    $this->headScript()->captureStart();
+    ?>
+        var BASE_PATH = "<?php echo $this->basePath(); ?>";
+        $(document).ready(function() {
+            OsmTools.createRegionTree('#regions-tree', '#selected-regions');
+        });
+    <?php
+    $this->headScript()->captureEnd();
+
+    $this->headLink()
+        ->prependStylesheet($this->basePath().'/jstree/themes/default/style.min.css');
+?>
+
+<div id="regions-tree"></div>
+<input type="text" id="selected-regions" value="" />

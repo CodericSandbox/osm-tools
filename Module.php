@@ -5,28 +5,16 @@
  * @author      Jakob Schumann <schumann@vrok.de>
  */
 
-namespace TranslationModule;
+namespace OsmTools;
 
-use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
-use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 
 /**
  * Module bootstrapping.
  */
-class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
-        ConfigProviderInterface
+class Module implements AutoloaderProviderInterface, ConfigProviderInterface
 {
-    public function onBootstrap(EventInterface $e)
-    {
-        $eventManager = $e->getApplication()->getEventManager();
-        $serviceManager = $e->getApplication()->getServiceManager();
-
-        $translationService = $serviceManager->get('TranslationModule\Service\Translation');
-        $translationService->attach($eventManager);
-    }
-
     /**
      * Returns the modules default configuration.
      *

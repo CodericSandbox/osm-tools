@@ -1,0 +1,60 @@
+<?php
+if (!$this->region) {
+    echo 'No region found';
+    return;
+}
+
+$obj = $this->region;
+$parents = array();
+while ($parent = $obj->getParent()) {
+    $parents[] = $parent;
+    $obj = $parent;
+}
+
+foreach(array_reverse($parents) as $parent) : ?>
+<a href="<?php echo $this->url('osmtools/region', array(
+            'osmid'   => $parent->getOsmId(),
+            'osmtype' => $parent->getOsmType()
+)); ?>">
+        <?php echo $parent->getName(); ?></h3>
+</a>
+&gt;
+<?php endforeach;
+$children = $region->getChildren();
+?>
+
+
+<b><?php echo $this->region->getName(); ?></b>
+<ul>
+    <li>ID: <?php echo $this->region->getId(); ?></li>
+    <li>Type: <?php echo $this->region->getType(); ?></li>
+    <li>Rank: <?php echo $this->region->getRank(); ?></li>
+    <li>Admin Level: <?php echo $this->region->getAdminLevel(); ?></li>
+    <li>Children count: <?php echo count($children); ?></li>
+    <?php if(count($children)) : ?>
+    <li>Children:<br />
+        <ul>
+            <?php
+            foreach ($children as $child) : ?>
+            <li>
+                <?php if ($child->hasChildren()) : ?>
+                <a href="<?php echo $this->url('osmtools/region', array(
+                    'osmid'   => $child->getOsmId(),
+                    'osmtype' => $child->getOsmType()
+                )); ?>">
+                    <?php echo $child->getName(); ?></h3>
+                </a>
+                <?php else : ?>
+                    <?php echo $child->getName(); ?></h3>
+                <?php endif; ?>
+                <br />
+                <ul>
+                    <li><?php echo $child->getOsmType(); ?> <?php echo $child->getOsmId(); ?></li>
+                    <li><?php echo $child->getType(); ?> (<?php echo $child->getRank(); ?>)
+                </ul>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </li>
+    <?php endif; ?>
+</ul>
