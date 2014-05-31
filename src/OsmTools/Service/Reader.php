@@ -98,6 +98,7 @@ class Reader implements ServiceLocatorAwareInterface
         $this->getEntityManager()->persist($region);
 
         $this->getEntityManager()->flush();
+
         return $region->getChildren();
     }
 

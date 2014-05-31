@@ -62,7 +62,7 @@ class ImportController extends AbstractActionController
 
             }
 
-            // we select only 15 regions and free them & their imported children
+            // we select only 150 regions and free them & their imported children
             // here to prevent hitting the memory limit
             $em->clear();
         }
