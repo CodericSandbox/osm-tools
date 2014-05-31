@@ -18,11 +18,11 @@ class RegionRepository extends NestedTreeRepository
      * Updates the given entity with the provided data.
      * Calls entityManager->persist.
      *
-     * @param Entity $instance
+     * @param Region $instance
      * @param array $formData
-     * @return Entity
+     * @return Region
      */
-    public function updateInstance(Entity $instance, array $formData)
+    public function updateInstance(Region $instance, array $formData)
     {
         $hydrator = new \DoctrineModule\Stdlib\Hydrator\DoctrineObject(
                 $this->getEntityManager());
