@@ -12,7 +12,7 @@
          * @param {string} selectedField
          * @returns {void}
          */
-        createRegionTree: function(identifier, selectedField) {
+        createRegionTree: function(identifier, url, selectedField) {
             $(identifier).on('select_node.jstree', function (e, data) {
                 // it does not make sense to select a region and some or all
                 // of its subregions as they are (hopefully) included in the
@@ -57,7 +57,7 @@
                         icons: false
                     },
                     data : {
-                        url : window.BASE_PATH + '/osmtools/json/jstree',
+                        url : url,
                         async: false,
                         data: function(node) {
                             var parent = node.id;

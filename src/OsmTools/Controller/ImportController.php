@@ -74,4 +74,13 @@ class ImportController extends AbstractActionController
         $deleted = $reader->clearEmptyRegions();
         echo "\ndeleted $deleted empty regions\n";
     }
+
+    public function treeAction()
+    {
+
+        $em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $repo = $em->getRepository('OsmTools\Entity\Region');
+        \Doctrine\Common\Util\Debug::dump($repo->recover(), 4);
+        $em->flush();
+    }
 }

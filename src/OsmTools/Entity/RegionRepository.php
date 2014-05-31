@@ -7,13 +7,12 @@
 
 namespace OsmTools\Entity;
 
-use Vrok\Doctrine\EntityRepository;
+use \Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 
 /**
  * Holds functions to work with and manage regions.
- * @todo necessary? only used function is updateInstance in Service\Reader,
- * replace with the direct call to the DoctrineModule\Hydrator
  */
-class RegionRepository extends EntityRepository
+class RegionRepository extends NestedTreeRepository
 {
+    
 }

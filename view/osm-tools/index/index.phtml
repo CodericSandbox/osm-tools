@@ -6,9 +6,12 @@
 
     $this->headScript()->captureStart();
     ?>
-        var BASE_PATH = "<?php echo $this->basePath(); ?>";
         $(document).ready(function() {
-            OsmTools.createRegionTree('#regions-tree', '#selected-regions');
+            OsmTools.createRegionTree(
+                '#regions-tree',
+                '<?php echo $this->basePath(); ?>/osmtools/json/jstree',
+                '#selected-regions'
+            );
         });
     <?php
     $this->headScript()->captureEnd();

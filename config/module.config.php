@@ -25,6 +25,13 @@ return array(
                 ),
             ),
         ),
+        'eventmanager' => array(
+            'orm_default' => array(
+                'subscribers' => array(
+                    'Gedmo\Tree\TreeListener',
+                ),
+            ),
+        ),
     ),
 
     'console' => array(
@@ -54,6 +61,15 @@ return array(
                         'defaults' => array(
                             'controller' => 'OsmTools\Controller\Import',
                             'action'     => 'finish',
+                        ),
+                    ),
+                ),
+                'tree-recover' => array(
+                    'options' => array(
+                        'route' => 'tree recover',
+                        'defaults' => array(
+                            'controller' => 'OsmTools\Controller\Import',
+                            'action'     => 'tree',
                         ),
                     ),
                 ),

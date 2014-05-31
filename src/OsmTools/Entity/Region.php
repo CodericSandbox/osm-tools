@@ -10,16 +10,42 @@ namespace OsmTools\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Defines a geographic region in a hierarchical context.
  *
  * @ORM\Entity
+ * @Gedmo\Tree(type="nested")
  * @ORM\Table(name="regions", uniqueConstraints={@ORM\UniqueConstraint(name="type_id", columns={"osmType", "osmId"})})
  * @ORM\Entity(repositoryClass="OsmTools\Entity\RegionRepository")
  */
 class Region
 {
+    /**
+     * @Gedmo\TreeLeft
+     * @ORM\Column(name="lft", type="integer")
+     */
+    public $lft;
+
+    /**
+     * @Gedmo\TreeLevel
+     * @ORM\Column(name="lvl", type="integer")
+     */
+    public $lvl;
+
+    /**
+     * @Gedmo\TreeRight
+     * @ORM\Column(name="rgt", type="integer")
+     */
+    public $rgt;
+
+    /**
+     * @Gedmo\TreeRoot
+     * @ORM\Column(name="root", type="integer", nullable=true)
+     */
+    private $root;
+
     /**
      * Initialize collection for lazy loading.
      */
@@ -240,6 +266,8 @@ class Region
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="parent">
     /**
+     * @var Region
+     * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="Region", inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE"),
      */
@@ -284,6 +312,7 @@ class Region
 // <editor-fold defaultstate="collapsed" desc="children">
     /**
      * @ORM\OneToMany(targetEntity="Region", mappedBy="parent", fetch="EXTRA_LAZY")
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     protected $children;
 
