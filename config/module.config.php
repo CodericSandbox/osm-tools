@@ -64,15 +64,6 @@ return array(
                         ),
                     ),
                 ),
-                'tree-recover' => array(
-                    'options' => array(
-                        'route' => 'tree recover',
-                        'defaults' => array(
-                            'controller' => 'OsmTools\Controller\Import',
-                            'action'     => 'tree',
-                        ),
-                    ),
-                ),
             ),
         ),
     ),

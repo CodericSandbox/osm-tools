@@ -36,19 +36,23 @@
             })
             .on('changed.jstree', function(e, data) {
                 // save the currently selected IDs
+                // this is also triggered after the AJAX load finished and
+                // selected nodes were found
                 if (selectedField && $(selectedField).length) {
                     $(selectedField).val(JSON.stringify(data.selected));
                 }
             })
             .on('open_node.jstree', function (e, data) {
                 // collapse all other open branches when a node is selected
-                var obj = data.instance.get_node(data.node, true);
+                // @todo don't collapse branches that have selected nodes
+                /*var obj = data.instance.get_node(data.node, true);
                 if(obj) {
                     obj.siblings('.jstree-open').each(function () {
                         data.instance.close_node(this, 0);
                     });
-                }
-            }).jstree({
+                }*/
+            })
+            .jstree({
                 'plugins' : ['checkbox'],
                 'core' : {
                     animation: 200, 

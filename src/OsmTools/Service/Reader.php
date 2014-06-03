@@ -133,6 +133,7 @@ class Reader implements ServiceLocatorAwareInterface
             $res = $repo->findBy(array('osmType' => NominatimApi::OSM_TYPE_NODE));
         }
 
+        $em->flush();
         return $count;
     }
 
@@ -171,6 +172,31 @@ class Reader implements ServiceLocatorAwareInterface
         }
 
         return null;
+    }
+
+    /**
+     * Tries to geocode the given address and returns one or more results.
+     *
+     * @param string $address
+     * @param int $limit    max number of results
+     * @return Geocoder\Result\Geocoded|SplObjectStorage
+     */
+    public function geocode($address, $limit = 1)
+    {
+        $adapter = new \Geocoder\HttpAdapter\ZendHttpAdapter();
+        $geocoder = new \Geocoder\Geocoder();
+        $geocoder->registerProviders(array(
+            new \Geocoder\Provider\GoogleMapsProvider(
+                $adapter, 'de', null, false
+            ),
+        ));
+
+        if ($limit > 1) {
+            $geocoder->setResultFactory(new \Geocoder\Result\MultipleResultFactory);
+        }
+
+        $geocode = $geocoder->using('google_maps')->limit($limit)->geocode($address);
+        return $geocode;
     }
 
     /**

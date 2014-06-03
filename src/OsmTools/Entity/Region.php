@@ -23,30 +23,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 class Region
 {
     /**
-     * @Gedmo\TreeLeft
-     * @ORM\Column(name="lft", type="integer")
-     */
-    public $lft;
-
-    /**
-     * @Gedmo\TreeLevel
-     * @ORM\Column(name="lvl", type="integer")
-     */
-    public $lvl;
-
-    /**
-     * @Gedmo\TreeRight
-     * @ORM\Column(name="rgt", type="integer")
-     */
-    public $rgt;
-
-    /**
-     * @Gedmo\TreeRoot
-     * @ORM\Column(name="root", type="integer", nullable=true)
-     */
-    private $root;
-
-    /**
      * Initialize collection for lazy loading.
      */
     public function __construct()
@@ -489,5 +465,52 @@ class Region
         $this->isParsed = (bool) $isParsed;
         return $this;
     }
+// </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="nested set properties">
+    /**
+     * @Gedmo\TreeRoot
+     * @ORM\Column(name="root", type="integer", nullable=true)
+     */
+    protected $root;
+
+    /**
+     * @Gedmo\TreeLevel
+     * @ORM\Column(name="lvl", type="integer")
+     */
+    protected $lvl;
+
+
+    /**
+     * @Gedmo\TreeLeft
+     * @ORM\Column(name="lft", type="integer")
+     */
+    protected $lft;
+
+    /**
+     * Return the nested set left limit.
+     * We need this public for complex queries that include all (not only direct) children.
+     *
+     * @return int
+     */
+    public function getLft()     {
+        return $this->lft;
+    }
+
+    /**
+     * @Gedmo\TreeRight
+     * @ORM\Column(name="rgt", type="integer")
+     */
+    protected $rgt;
+
+    /**
+     * Return the nested set right limit.
+     * We need this public for complex queries that include all (not only direct) children.
+     *
+     * @return int
+     */
+    public function getRgt()     {
+        return $this->rgt;
+    }
+
 // </editor-fold>
 }
