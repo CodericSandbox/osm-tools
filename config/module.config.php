@@ -31,6 +31,19 @@ return array(
                     'Gedmo\Tree\TreeListener',
                 ),
             ),
+            'dql' => array(
+                'numeric_functions' => array(
+                    'DISTANCE' => 'OsmTools\Doctrine\DistanceFunction',
+                ),
+            ),
+        ),
+        'configuration' => array(
+            'orm_default' => array(
+                'numeric_functions' => array(
+                    'DISTANCE'       => 'OsmTools\Doctrine\DistanceFunction',
+                    'DISTANCEFILTER' => 'OsmTools\Doctrine\DistanceFilter',
+                ),
+            ),
         ),
     ),
 

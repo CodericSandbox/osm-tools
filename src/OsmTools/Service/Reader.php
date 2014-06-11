@@ -187,7 +187,7 @@ class Reader implements ServiceLocatorAwareInterface
         $geocoder = new \Geocoder\Geocoder();
         $geocoder->registerProviders(array(
             new \Geocoder\Provider\GoogleMapsProvider(
-                $adapter, 'de', null, false
+                $adapter, 'de', null, false /*@todo true für SSL setzen wenn OpenSSL Zugriff auf CAPath/CAFile hat*/
             ),
         ));
 
