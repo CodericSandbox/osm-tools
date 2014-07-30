@@ -468,8 +468,10 @@ class Region
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="nested set properties">
     /**
+     * The root column must use the same data type as the ID column!
+     *
      * @Gedmo\TreeRoot
-     * @ORM\Column(name="root", type="integer", nullable=true)
+     * @ORM\Column(name="root", type="string", length=255, nullable=true)
      */
     protected $root;
 
@@ -492,7 +494,8 @@ class Region
      *
      * @return int
      */
-    public function getLft()     {
+    public function getLft()
+    {
         return $this->lft;
     }
 
@@ -508,7 +511,8 @@ class Region
      *
      * @return int
      */
-    public function getRgt()     {
+    public function getRgt()
+    {
         return $this->rgt;
     }
 
