@@ -476,6 +476,17 @@ class Region
     protected $root;
 
     /**
+     * Return the nested set root node id.
+     * We need this public for complex queries that include all (not only direct) children.
+     *
+     * @return int
+     */
+    public function getRoot()
+    {
+        return $this->root;
+    }
+
+    /**
      * @Gedmo\TreeLevel
      * @ORM\Column(name="lvl", type="integer")
      */
