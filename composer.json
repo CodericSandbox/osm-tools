@@ -5,11 +5,11 @@
     "homepage": "http://www.vrok.de/",
 
     "require": {
-        "php": ">=5.4",
-        "doctrine/doctrine-orm-module": "dev-master",
-        "gedmo/doctrine-extensions": "2.3.*",
-        "zendframework/zendframework": "~2.3.1",
-        "willdurand/geocoder": "2.5.*"
+        "php": ">=5.5",
+        "doctrine/doctrine-orm-module": "~0.8.0",
+        "gedmo/doctrine-extensions": "~2.3.9",
+        "zendframework/zendframework": "~2.3.3",
+        "willdurand/geocoder": "~2.5.0"
     },
     "autoload": {
         "psr-0": {

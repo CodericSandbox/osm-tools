@@ -267,21 +267,7 @@ class Region
      */
     public function setParent(Region $parent = null)
     {
-        // this parent is already set, avoid infinite loops by calling
-        // parent->addChild thus calling parent->child->setParent
-        if ($this->parent === $parent) {
-            return $this;
-        }
-
-        if ($this->parent) {
-            $this->parent->removeChild($this);
-        }
-
         $this->parent = $parent;
-        if ($parent) {
-            $this->parent->addChild($this);
-        }
-
         return $this;
     }
 // </editor-fold>
@@ -300,63 +286,6 @@ class Region
     public function getChildren()
     {
         return $this->children;
-    }
-
-    /**
-     * Adds the given Region to the collection.
-     * Called by $region->setParent to keep the collection consistent.
-     *
-     * @param Region $child
-     * @return boolean  false if the Region was already in the collection,
-     *  else true
-     */
-    public function addChild(Region $child)
-    {
-        if ($this->children->contains($child)) {
-            return false;
-        }
-        $child->setParent($this);
-        return $this->children->add($child);
-    }
-
-    /**
-     * Removes the given Region from the collection.
-     * Called by $region->setParent to keep the collection consistent.
-     *
-     * @param Region $child
-     * @return boolean     true if the Region was in the collection and was
-     *     removed, else false
-     */
-    public function removeChild(Region $child)
-    {
-        if ($this->children->contains($child)) {
-            $child->setParent(null);
-        }
-        return $this->children->removeElement($child);
-    }
-
-    /**
-     * Proxies to addChild for multiple elements.
-     *
-     * @param Collection $children
-     */
-    public function addChildren($children)
-    {
-        foreach($children as $child) {
-            $this->addChild($child);
-        }
-    }
-
-    /**
-     * Proxies to removeChild for multiple elements.
-     *
-     * @param Collection $children
-     */
-    public function removeChildren($children)
-    {
-        foreach($children as $child) {
-            $this->removeChild($child);
-        }
     }
 
     /**

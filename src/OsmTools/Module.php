@@ -8,11 +8,12 @@
 namespace OsmTools;
 
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\Feature\ServiceProviderInterface;
 
 /**
  * Module bootstrapping.
  */
-class Module implements ConfigProviderInterface
+class Module implements ConfigProviderInterface, ServiceProviderInterface
 {
     /**
      * Returns the modules default configuration.
@@ -22,5 +23,28 @@ class Module implements ConfigProviderInterface
     public function getConfig()
     {
         return include __DIR__ . '/../../config/module.config.php';
+    }
+
+    /**
+     * Return additional serviceManager config with closures that should not be in the
+     * config files to allow caching of the complete configuration.
+     *
+     * @return array
+     */
+    public function getServiceConfig()
+    {
+        return array(
+            'factories' => array(
+                'OsmTools\Wrapper\NominatimApi' => function($sm) {
+                    $config = $sm->get('Config');
+                    $nominatim = new \OsmTools\Wrapper\NominatimApi();
+                    if (!empty($config['osm_tools']['nominatim_url'])) {
+                        $url = $config['osm_tools']['nominatim_url'];
+                        $nominatim->setNominatimUrl($url);
+                    }
+                    return $nominatim;
+                },
+            ),
+        );
     }
 }
