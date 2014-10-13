@@ -150,7 +150,6 @@ return array(
                     // Demonstration JSTree
                     'route' => '/osmtools/',
                     'defaults' => array(
-                        '__NAMESPACE__' => 'OsmTools\Controller',
                         'controller' => 'OsmTools\Controller\Index',
                         'action' => 'index',
                     ),
