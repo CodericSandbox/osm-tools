@@ -3,12 +3,13 @@
     "description": "OpenStreetMap Tool Library",
     "license": "private",
     "homepage": "http://www.vrok.de/",
+    "minimum-stability": "dev,
 
     "require": {
         "php": ">=5.5",
         "doctrine/doctrine-orm-module": "~0.9.0",
         "gedmo/doctrine-extensions": "~2.4.1",
-        "zendframework/zendframework": "~2.5.0",
+        "zendframework/zendframework": "~2.5.1",
         "willdurand/geocoder": "~2.8"
     },
     "autoload": {
