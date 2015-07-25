@@ -119,7 +119,6 @@ class NominatimApi
             'maxredirects' => 3,
             'timeout'      => 1000,
         ));
-
         $response = $client->send();
         if (!$response->isOk()) {
             // @todo error log
