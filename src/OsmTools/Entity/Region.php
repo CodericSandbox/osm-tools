@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -61,11 +62,13 @@ class Region
      * Sets the regions ID.
      *
      * @param string $id
+     *
      * @return self
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 // </editor-fold>
@@ -89,12 +92,14 @@ class Region
      * Sets the regions OSM ID.
      *
      * @param string $osmId
+     *
      * @return self
      */
     public function setOsmId($osmId)
     {
         $this->osmId = $osmId;
         $this->setId($this->osmType.'-'.$this->osmId);
+
         return $this;
     }
 // </editor-fold>
@@ -118,12 +123,14 @@ class Region
      * Sets the regions OSM type.
      *
      * @param string $osmType
+     *
      * @return self
      */
     public function setOsmType($osmType)
     {
         $this->osmType = $osmType;
         $this->setId($this->osmType.'-'.$this->osmId);
+
         return $this;
     }
 // </editor-fold>
@@ -148,11 +155,13 @@ class Region
      * Sets the language name.
      *
      * @param string $name
+     *
      * @return self
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 // </editor-fold>
@@ -165,7 +174,7 @@ class Region
     /**
      * Returns the regions Nominatim address rank.
      *
-     * @return integer
+     * @return int
      */
     public function getRank()
     {
@@ -175,12 +184,14 @@ class Region
     /**
      * Sets the regions Nominatim address rank.
      *
-     * @param integer $rank
+     * @param int $rank
+     *
      * @return self
      */
     public function setRank($rank)
     {
         $this->rank = $rank;
+
         return $this;
     }
 // </editor-fold>
@@ -193,7 +204,7 @@ class Region
     /**
      * Returns the regions OSM admin_level.
      *
-     * @return integer
+     * @return int
      */
     public function getAdminLevel()
     {
@@ -203,12 +214,14 @@ class Region
     /**
      * Sets the regions OSM admin_level.
      *
-     * @param integer $adminLevel
+     * @param int $adminLevel
+     *
      * @return self
      */
     public function setAdminLevel($adminLevel)
     {
         $this->adminLevel = $adminLevel;
+
         return $this;
     }
 // </editor-fold>
@@ -232,11 +245,13 @@ class Region
      * Sets the regions Nominatim defined type.
      *
      * @param string $type
+     *
      * @return self
      */
     public function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
 // </editor-fold>
@@ -263,11 +278,13 @@ class Region
      * Sets the parent region.
      *
      * @param Region $parent
+     *
      * @return self
      */
     public function setParent(Region $parent = null)
     {
         $this->parent = $parent;
+
         return $this;
     }
 // </editor-fold>
@@ -295,7 +312,7 @@ class Region
      */
     public function hasChildren()
     {
-        return (bool)$this->getChildCount();
+        return (bool) $this->getChildCount();
     }
 
     /**
@@ -329,11 +346,13 @@ class Region
      * Sets the pbf URL.
      *
      * @param string $pbfUrl
+     *
      * @return self
      */
     public function setPbfUrl($pbfUrl)
     {
         $this->pbfUrl = $pbfUrl;
+
         return $this;
     }
 // </editor-fold>
@@ -358,11 +377,13 @@ class Region
      * Sets the polygon file name.
      *
      * @param string $polygonFile
+     *
      * @return self
      */
     public function setPolygonFile($polygonFile)
     {
         $this->polygonFile = $polygonFile;
+
         return $this;
     }
 // </editor-fold>
@@ -387,11 +408,13 @@ class Region
      * Sets wether the regions is completely parsed.
      *
      * @param bool $isParsed
+     *
      * @return self
      */
     public function setIsParsed($isParsed)
     {
         $this->isParsed = (bool) $isParsed;
+
         return $this;
     }
 // </editor-fold>
@@ -420,7 +443,6 @@ class Region
      * @ORM\Column(name="lvl", type="integer")
      */
     protected $lvl;
-
 
     /**
      * @Gedmo\TreeLeft

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -14,10 +15,11 @@ use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * Filters the records by their distance (in km) to the given coordinates:
- * DISTANCEFILTER($fromLat, $fromLng, $toLat, $toLng, $maxDist)
+ * DISTANCEFILTER($fromLat, $fromLng, $toLat, $toLng, $maxDist).
  *
  * Uses a bounding rectangle to make use of indices on the lon/lat columns and avoid a
  * full table scan with the complex calculations.
+ *
  * @link http://www.arubin.org/files/geo_search.pdf
  */
 class DistanceFilter extends FunctionNode
@@ -61,25 +63,25 @@ class DistanceFilter extends FunctionNode
         $earthDiameter = 6372.8;
 
         // order is important, this adds the parameters to the unnamed parameter list!
-        $tolon1 = $this->toLng->dispatch($sqlWalker);
+        $tolon1   = $this->toLng->dispatch($sqlWalker);
         $fromLon1 = $this->fromLng->dispatch($sqlWalker);
-        $dist1 = $this->dist->dispatch($sqlWalker);
+        $dist1    = $this->dist->dispatch($sqlWalker);
         $fromLat1 = $this->fromLat->dispatch($sqlWalker);
         $fromLon2 = $this->fromLng->dispatch($sqlWalker);
-        $dist2 = $this->dist->dispatch($sqlWalker);
+        $dist2    = $this->dist->dispatch($sqlWalker);
         $fromLat2 = $this->fromLat->dispatch($sqlWalker);
-        $toLat1 = $this->toLat->dispatch($sqlWalker);
+        $toLat1   = $this->toLat->dispatch($sqlWalker);
         $fromLat3 = $this->fromLat->dispatch($sqlWalker);
-        $dist3 = $this->dist->dispatch($sqlWalker);
+        $dist3    = $this->dist->dispatch($sqlWalker);
         $fromLat4 = $this->fromLat->dispatch($sqlWalker);
-        $dist4 = $this->dist->dispatch($sqlWalker);
+        $dist4    = $this->dist->dispatch($sqlWalker);
         $fromLat5 = $this->fromLat->dispatch($sqlWalker);
-        $toLat2 = $this->toLat->dispatch($sqlWalker);
+        $toLat2   = $this->toLat->dispatch($sqlWalker);
         $fromLat6 = $this->fromLat->dispatch($sqlWalker);
-        $toLat3 = $this->toLat->dispatch($sqlWalker);
+        $toLat3   = $this->toLat->dispatch($sqlWalker);
         $fromLon3 = $this->fromLng->dispatch($sqlWalker);
-        $tolon2 = $this->toLng->dispatch($sqlWalker);
-        $dist5 = $this->dist->dispatch($sqlWalker);
+        $tolon2   = $this->toLng->dispatch($sqlWalker);
+        $dist5    = $this->dist->dispatch($sqlWalker);
 
         $sql = "($tolon1 BETWEEN $fromLon1 - $dist1 / ABS(COS(RADIANS($fromLat1)) * 111.045)"
             ." AND $fromLon2 + $dist2 / ABS(COS(RADIANS($fromLat2)) * 111.045) AND "

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -16,7 +17,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 class RegionParser
 {
     /**
-     * Entity Manager instance
+     * Entity Manager instance.
      *
      * @var ObjectManager
      */
@@ -40,11 +41,11 @@ class RegionParser
     public function insertRegion($relation)
     {
         // @todo insert translation entries for the other 'names' entries
-        $data = array(
+        $data = [
             'name'       => $relation['names']['name'],
             'relationId' => $relation['relationId'],
             'adminLevel' => $relation['adminLevel'],
-        );
+        ];
 
         if (!empty($relation['parent'])) {
             $data['parent'] = $relation['parent'];
@@ -56,7 +57,7 @@ class RegionParser
             $data['polygonFile'] = $relation['polygonFile'];
         }
 
-        $region = new \OsmTools\Entity\Region();
+        $region     = new \OsmTools\Entity\Region();
         $repository = $this->entityManager
                 ->getRepository('OsmTools\Entity\Region');
         $region = $repository->updateInstance($region, $data);

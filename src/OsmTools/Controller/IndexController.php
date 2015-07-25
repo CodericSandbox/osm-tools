@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -30,45 +31,46 @@ class IndexController extends AbstractActionController
     public function regionAction()
     {
         $reader = $this->getServiceLocator()->get('OsmTools\Service\Reader');
-        $repo = $reader->getRegionRepository();
-        $region = $repo->findOneBy(array(
+        $repo   = $reader->getRegionRepository();
+        $region = $repo->findOneBy([
             'osmId'   => $this->params('osmid'),
             'osmType' => $this->params('osmtype'),
-        ));
+        ]);
 
-        return $this->createViewModel(array('region' => $region));
+        return $this->createViewModel(['region' => $region]);
     }
 
     /**
      * Retrieves all subregions for the region given via GET.
-     * Returns JSON formatted to be used by JSTree
+     * Returns JSON formatted to be used by JSTree.
      *
      * @link http://www.jstree.com/
+     *
      * @return JsonModel
      */
     public function jstreeAction()
     {
         $parent = $this->params()->fromQuery('parent', null);
         $reader = $this->getServiceLocator()->get('OsmTools\Service\Reader');
-        $repo = $reader->getRegionRepository();
+        $repo   = $reader->getRegionRepository();
 
-        $regions = $repo->findBy(array(
+        $regions = $repo->findBy([
             // force NULL as nothing would be found for the empty string
             'parent' => empty($parent) ? null : $parent,
-        ));
+        ]);
 
-        $result = array();
-        foreach($regions as $region) {
-            $result[] = array(
+        $result = [];
+        foreach ($regions as $region) {
+            $result[] = [
                 'id'    => $region->getId(),
                 'text'  => $region->getName(),
-                'state' => array(
+                'state' => [
                     'disabled' => false,
                     'loaded'   => !$region->hasChildren(),
                     'opened'   => false,
-                    'selected' => false
-                ),
-            );
+                    'selected' => false,
+                ],
+            ];
         }
 
         return new JsonModel($result);

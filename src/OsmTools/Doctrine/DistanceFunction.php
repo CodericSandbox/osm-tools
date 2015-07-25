@@ -1,6 +1,8 @@
 <?php
+
 /**
  * @author Konstantin.Myakshin <koc-dp@yandex.ru>
+ *
  * @link https://gist.github.com/Koc/3016704
  */
 

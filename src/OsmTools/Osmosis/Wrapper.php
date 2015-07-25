@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -11,6 +12,7 @@ namespace OsmTools\Osmosis;
  * Allows calls to the osmosis tool to extract data from planet files.
  *
  * @link http://wiki.openstreetmap.org/wiki/Osmosis
+ *
  * @todo move to OsmTools\Wrapper\Osmosis
  */
 class Wrapper
@@ -79,18 +81,19 @@ class Wrapper
      * input file.
      * The result is cached in the storage directory.
      *
-     * @param string $paramString   all osmosis parameters for data manipulation,
-     *     input & output are automatically added
-     * @param bool $reload  if true an existing cached result will be overwritten
-     * @return SimpleXMLElement     or false on failure
+     * @param string $paramString all osmosis parameters for data manipulation,
+     *                            input & output are automatically added
+     * @param bool   $reload      if true an existing cached result will be overwritten
+     *
+     * @return SimpleXMLElement or false on failure
      */
     public function getXml($paramString, $reload = false)
     {
-        $filename = $this->storageDir . '/osmosis-' . md5($paramString) . '.xml';
+        $filename = $this->storageDir.'/osmosis-'.md5($paramString).'.xml';
 
         if ($reload || !file_exists($filename)) {
-            $cmd = $this->cmd . ' --read-pbf file="' . $this->inputFile . '" '
-                    . $paramString . ' --wx file="' . $filename . '"';
+            $cmd = $this->cmd.' --read-pbf file="'.$this->inputFile.'" '
+                    .$paramString.' --wx file="'.$filename.'"';
 
             $output = null;
             $return = null;
@@ -111,23 +114,24 @@ class Wrapper
      * have the given admin_level.
      * Optionally only relations within the given polygon are returned.
      *
-     * @param int $adminLevel
-     * @param string $inPoly    filename of the bounding polygon
+     * @param int    $adminLevel
+     * @param string $inPoly     filename of the bounding polygon
+     *
      * @return array
      */
     public function getAdministrativeBoundaries($adminLevel, $inPoly = null)
     {
         // "--used-node idTrackerType=Dynamic" to avoid errors with integers > 2^31
         // remove when packaged osmosis version >= 0.43
-        $params = '--tf accept-relations admin_level=' . $adminLevel
-                . ' --used-way --used-node idTrackerType=Dynamic --tf reject-nodes --tf reject-ways';
+        $params = '--tf accept-relations admin_level='.$adminLevel
+                .' --used-way --used-node idTrackerType=Dynamic --tf reject-nodes --tf reject-ways';
         if ($inPoly) {
             $params = "--bp file=$inPoly completeRelations=yes $params";
         }
 
         $xml = $this->getXml($params);
 
-        $regions = array();
+        $regions   = [];
         $relations = $xml->xPath('/osm/relation');
         foreach ($relations as $relation) {
             // skip landmass entries, we want the islands too
@@ -142,11 +146,11 @@ class Wrapper
                 continue;
             }
 
-            $region = array(
+            $region = [
                 'relationId' => (int) $relation->attributes()->id,
                 'adminLevel' => $adminLevel,
-                'names'      => array(),
-            );
+                'names'      => [],
+            ];
 
             $names = $relation->xPath('tag[starts-with(@k, \'name\')]');
             foreach ($names as $name) {
@@ -168,13 +172,14 @@ class Wrapper
      * Retrieves the polygon file representing the outline of the given relation.
      * Searches the storage directory before querying the API.
      *
-     * @param int $relationId
-     * @param bool $reload  if true an existing file in the storage dir is overwritten
+     * @param int  $relationId
+     * @param bool $reload     if true an existing file in the storage dir is overwritten
+     *
      * @return string
      */
     public function getRelationPoly($relationId, $reload = false)
     {
-        $filename = $this->storageDir . "/relation-$relationId.poly";
+        $filename = $this->storageDir."/relation-$relationId.poly";
 
         if ($reload || !file_exists($filename)) {
             $poly = $this->loadRelationPoly($relationId);
@@ -191,8 +196,11 @@ class Wrapper
      *
      * @todo error handling, use Zend\Http\Client, service url configurable,
      *     use a new wrapper class as this is not directly related to osmosis
+     *
      * @link http://wiki.openstreetmap.org/wiki/Osmosis/Polygon_Filter_File_Format
+     *
      * @param type $relationId
+     *
      * @return string
      */
     public function loadRelationPoly($relationId)
@@ -202,7 +210,7 @@ class Wrapper
         curl_setopt($curl, CURLOPT_HEADER, 0);
         curl_setopt($curl, CURLOPT_URL,
             'http://osm102.openstreetmap.fr/~jocelyn/polygons/get_poly.py?params=0&id='
-                . $relationId
+                .$relationId
         );
 
         $poly = curl_exec($curl);
@@ -215,8 +223,9 @@ class Wrapper
      * Retrieve the path to the downloaded PBF file specified with the given URL.
      *
      * @param string $pbfUrl
-     * @param bool $reload  if true a locally existing file is re-downloaded
-     * @return string|bool  filename or false on error
+     * @param bool   $reload if true a locally existing file is re-downloaded
+     *
+     * @return string|bool filename or false on error
      */
     public function getPbfFile($pbfUrl, $reload = false)
     {
@@ -235,15 +244,17 @@ class Wrapper
      * Downloads the PBF file from the given URL and saves it in the storageDir.
      *
      * @todo move to new class as this is not directly related to osmosis
+     *
      * @param string $pbfUrl
-     * @return string|boolean   local filename or false on error
+     *
+     * @return string|bool local filename or false on error
      */
     public function loadPbf($pbfUrl, $filename)
     {
-        $client = new \Zend\Http\Client($pbfUrl, array(
+        $client = new \Zend\Http\Client($pbfUrl, [
             'maxredirects' => 0,
             'timeout'      => 100,
-        ));
+        ]);
         $client->setStream($filename)->send();
 
         if (!file_exists($filename)) {

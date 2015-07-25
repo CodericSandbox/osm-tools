@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -43,7 +44,7 @@ class OsmosisController extends AbstractActionController
         }
         $pbfUrl = $pbfUrls[$countryId];
 
-        $reader = $this->getServiceLocator()->get('OsmTools\Service\Reader');
+        $reader  = $this->getServiceLocator()->get('OsmTools\Service\Reader');
         $wrapper = $reader->getOsmosisWrapper();
         $pbfFile = $wrapper->getPbfFile($pbfUrl);
         $wrapper->setInputFile($pbfFile);
@@ -57,14 +58,13 @@ class OsmosisController extends AbstractActionController
 
         $regions = $wrapper->getAdministrativeBoundaries($stateLevel, $polyFile);
 
-        $blacklist = array();
+        $blacklist = [];
         if (isset($config['osm_tools']['relation_blacklist'])) {
             $blacklist = $config['osm_tools']['relation_blacklist'];
         }
 
-
         $parser = $reader->getRegionParser();
-        foreach($regions as $region) {
+        foreach ($regions as $region) {
             if (in_array($region['relationId'], $blacklist)) {
                 continue;
             }
@@ -79,8 +79,8 @@ class OsmosisController extends AbstractActionController
         }
 
         $reader->getEntityManager()->flush();
-        $end = microtime(true);
-        $duration = round($end-$start);
+        $end      = microtime(true);
+        $duration = round($end - $start);
         echo "\n took $duration seconds";
     }
 }

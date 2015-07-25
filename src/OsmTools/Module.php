@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -22,7 +23,7 @@ class Module implements ConfigProviderInterface, ServiceProviderInterface
      */
     public function getConfig()
     {
-        return include __DIR__ . '/../../config/module.config.php';
+        return include __DIR__.'/../../config/module.config.php';
     }
 
     /**
@@ -33,18 +34,19 @@ class Module implements ConfigProviderInterface, ServiceProviderInterface
      */
     public function getServiceConfig()
     {
-        return array(
-            'factories' => array(
-                'OsmTools\Wrapper\NominatimApi' => function($sm) {
+        return [
+            'factories' => [
+                'OsmTools\Wrapper\NominatimApi' => function ($sm) {
                     $config = $sm->get('Config');
                     $nominatim = new \OsmTools\Wrapper\NominatimApi();
                     if (!empty($config['osm_tools']['nominatim_url'])) {
                         $url = $config['osm_tools']['nominatim_url'];
                         $nominatim->setNominatimUrl($url);
                     }
+
                     return $nominatim;
                 },
-            ),
-        );
+            ],
+        ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -32,6 +33,7 @@ class Reader implements ServiceLocatorAwareInterface
      * Creates a new Region from the given data.
      *
      * @param array $data
+     *
      * @return RegionEntity
      */
     public function createRegion(array $data)
@@ -44,6 +46,7 @@ class Reader implements ServiceLocatorAwareInterface
 
         $region = $this->getRegionRepository()
                 ->updateInstance(new RegionEntity(), $data);
+
         return $region;
     }
 
@@ -52,14 +55,15 @@ class Reader implements ServiceLocatorAwareInterface
      * retrieve a region dataset (potentially including children).
      *
      * @param int $osmId
+     *
      * @return RegionEntity or null on error
      */
     public function importRegion($osmId, $osmType = NominatimApi::OSM_TYPE_RELATION)
     {
         $nominatim = $this->getNominatimApi();
-        $data = $nominatim->loadRegion($osmId, $osmType);
+        $data      = $nominatim->loadRegion($osmId, $osmType);
         if (!$data) {
-            return null;
+            return;
         }
 
         // the children have no ID set, the hydrator would throw errors
@@ -80,7 +84,6 @@ class Reader implements ServiceLocatorAwareInterface
      * type=>administrative instead of the correct city,suburb etc.
      *
      * @param \OsmTools\Entity\Region $region
-     * @return null
      */
     public function importChildren(RegionEntity $region)
     {
@@ -88,7 +91,7 @@ class Reader implements ServiceLocatorAwareInterface
 
         $data = $nominatim->loadRegion($region->getOsmId(), $region->getOsmType());
         if ($data) {
-            foreach($data['children'] as $childData) {
+            foreach ($data['children'] as $childData) {
                 $child = $this->createRegion($childData);
                 $child->setParent($region);
             }
@@ -106,21 +109,21 @@ class Reader implements ServiceLocatorAwareInterface
      * Removes all Region entries from the database that are nodes (and thus
      * have no polygon) and have no children (that have a polygon).
      *
-     * @return int  number of deleted regions
+     * @return int number of deleted regions
      */
     public function clearEmptyRegions()
     {
         $repo = $this->getRegionRepository();
-        $em = $this->getEntityManager();
+        $em   = $this->getEntityManager();
 
         $count = 0;
-        $res = $repo->findBy(array('osmType' => NominatimApi::OSM_TYPE_NODE));
-        while(count($res)) {
+        $res   = $repo->findBy(['osmType' => NominatimApi::OSM_TYPE_NODE]);
+        while (count($res)) {
             $roundCount = 0;
-            foreach($res as $region) {
+            foreach ($res as $region) {
                 if (!count($region->getChildren())) {
                     $em->remove($region);
-                    $count++;
+                    ++$count;
                 }
             }
             if (!$roundCount) {
@@ -130,10 +133,11 @@ class Reader implements ServiceLocatorAwareInterface
             $count += $roundCount;
 
             // update result for the next higher level
-            $res = $repo->findBy(array('osmType' => NominatimApi::OSM_TYPE_NODE));
+            $res = $repo->findBy(['osmType' => NominatimApi::OSM_TYPE_NODE]);
         }
 
         $em->flush();
+
         return $count;
     }
 
@@ -143,59 +147,62 @@ class Reader implements ServiceLocatorAwareInterface
      *
      * @param float $lat
      * @param float $lon
-     * @return RegionEntity     or null on error/none found
+     *
+     * @return RegionEntity or null on error/none found
      */
     public function searchRegion($lat, $lon)
     {
         $nominatim = $this->getNominatimApi();
-        $data = $nominatim->queryAddressSearch($lat, $lon);
+        $data      = $nominatim->queryAddressSearch($lat, $lon);
         if (!$data || empty($data['addresses'])) {
-            return null;
+            return;
         }
 
         $repository = $this->getRegionRepository();
 
         // look for regions matching the retrieved addresses in the database,
         // closest first
-        foreach($data['addresses'] as $address) {
+        foreach ($data['addresses'] as $address) {
             if (empty($address['osm_id']) || empty($address['osm_type'])) {
                 continue;
             }
 
-            $region = $repository->findOneBy(array(
+            $region = $repository->findOneBy([
                 'osmId'   => $address['osm_id'],
                 'osmType' => $nominatim->nominatimToOsm($address['osm_type']),
-            ));
+            ]);
             if ($region) {
                 return $region;
             }
         }
 
-        return null;
+        return;
     }
 
     /**
      * Tries to geocode the given address and returns one or more results.
      *
      * @param string $address
-     * @param int $limit    max number of results
+     * @param int    $limit   max number of results
+     *
      * @return Geocoder\Result\Geocoded|SplObjectStorage
      */
     public function geocode($address, $limit = 1)
     {
-        $adapter = new \Geocoder\HttpAdapter\ZendHttpAdapter();
+        $adapter  = new \Geocoder\HttpAdapter\ZendHttpAdapter();
         $geocoder = new \Geocoder\Geocoder();
-        $geocoder->registerProviders(array(
+        $geocoder->registerProviders([
             new \Geocoder\Provider\GoogleMapsProvider(
                 $adapter, 'de', null, false /*@todo true für SSL setzen wenn OpenSSL Zugriff auf CAPath/CAFile hat*/
             ),
-        ));
+        ]);
 
         if ($limit > 1) {
-            $geocoder->setResultFactory(new \Geocoder\Result\MultipleResultFactory);
+            $geocoder->setResultFactory(new \Geocoder\Result\MultipleResultFactory());
         }
 
         $geocode = $geocoder->using('google_maps')->limit($limit)->geocode($address);
+
         return $geocode;
     }
 
@@ -217,6 +224,7 @@ class Reader implements ServiceLocatorAwareInterface
     public function getRegionRepository()
     {
         $em = $this->getEntityManager();
+
         return $em->getRepository('OsmTools\Entity\Region');
     }
 
@@ -234,6 +242,7 @@ class Reader implements ServiceLocatorAwareInterface
      * Creates a new Wrapper instance with storageDir and osmosisCmd preset.
      *
      * @todo implement factory
+     *
      * @return \OsmTools\Osmosis\Wrapper
      */
     public function getOsmosisWrapper()
@@ -244,7 +253,7 @@ class Reader implements ServiceLocatorAwareInterface
         $config = $this->getServiceLocator()->get('config');
         if (isset($config['osm_tools'])
             && !empty($config['osm_tools']['osmosis_cmd'])
-        )  {
+        ) {
             $wrapper->setCommand($config['osm_tools']['osmosis_cmd']);
         }
 
@@ -259,6 +268,7 @@ class Reader implements ServiceLocatorAwareInterface
     public function getRegionParser()
     {
         $parser = new \OsmTools\Osmosis\RegionParser($this->getEntityManager());
+
         return $parser;
     }
 
@@ -266,6 +276,7 @@ class Reader implements ServiceLocatorAwareInterface
      * Allows to set multiple options at once.
      *
      * @todo support ArrayObject etc
+     *
      * @param array $options
      */
     public function setOptions(array $options)

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -31,6 +32,7 @@ class NominatimApi
      * Converts the OSM type to the Nominatim notation.
      *
      * @param string $type
+     *
      * @return string
      */
     public function osmToNominatim($type)
@@ -52,6 +54,7 @@ class NominatimApi
      * Converts the Nominatim type to the OSM notation.
      *
      * @param string $type
+     *
      * @return string
      */
     public function nominatimToOsm($type)
@@ -83,11 +86,13 @@ class NominatimApi
      * Sets the URL under which the nominatim instance is reachable.
      *
      * @param string $url
+     *
      * @return self
      */
     public function setNominatimUrl($url)
     {
         $this->nominatimUrl = $url;
+
         return $this;
     }
 
@@ -95,9 +100,10 @@ class NominatimApi
      * Queries the configured Nominatim service for the address and related
      * points for the given OSM object.
      *
-     * @param int $osmId
+     * @param int    $osmId
      * @param string $osmType
-     * @return array    or null on error
+     *
+     * @return array or null on error
      */
     public function queryOsmObject($osmId, $osmType)
     {
@@ -111,18 +117,18 @@ class NominatimApi
         // http://nominatim.openstreetmap.org/hierarchy.php?osmid=62422&osmtype=R&format=json
         // @todo replace fixed locale, update script to return all names
         $url = rtrim($this->nominatimUrl, '/')
-            .'/jsonhierarchy.php?osmid='.(int)$osmId
+            .'/jsonhierarchy.php?osmid='.(int) $osmId
             .'&osmtype='.$this->osmToNominatim($osmType)
             .'&accept-language=de,en;q=0.5';
 
-        $client = new \Zend\Http\Client($url, array(
+        $client = new \Zend\Http\Client($url, [
             'maxredirects' => 3,
             'timeout'      => 1000,
-        ));
+        ]);
         $response = $client->send();
         if (!$response->isOk()) {
             // @todo error log
-            return null;
+            return;
         }
 
         $json = $response->getBody();
@@ -130,7 +136,7 @@ class NominatimApi
         $data = json_decode($json, true);
         if (!empty($data['error'])) {
             // @todo log the error message, return error?
-            return null;
+            return;
         }
 
         return $data;
@@ -141,7 +147,8 @@ class NominatimApi
      *
      * @param float $lat
      * @param float $lon
-     * @return array    or null on error
+     *
+     * @return array or null on error
      */
     public function queryAddressSearch($lat, $lon)
     {
@@ -154,18 +161,18 @@ class NominatimApi
         // reverse.php does not output all related addresses
         // @todo replace fixed locale, update script to return all names
         $url = rtrim($this->nominatimUrl, '/')
-            .'/jsonsearch.php?lon='.(float)$lon.'&lat='.(float)$lat
+            .'/jsonsearch.php?lon='.(float) $lon.'&lat='.(float) $lat
             .'&accept-language=de,en;q=0.5';
 
-        $client = new \Zend\Http\Client($url, array(
+        $client = new \Zend\Http\Client($url, [
             'maxredirects' => 3,
             'timeout'      => 1000,
-        ));
+        ]);
 
         $response = $client->send();
         if (!$response->isOk()) {
             // @todo error log
-            return null;
+            return;
         }
 
         $json = $response->getBody();
@@ -173,7 +180,7 @@ class NominatimApi
         $data = json_decode($json, true);
         if (!empty($data['error'])) {
             // @todo log the error message, return error?
-            return null;
+            return;
         }
 
         return $data;
@@ -183,9 +190,10 @@ class NominatimApi
      * Tries to load the region represented by the given OSM object and her
      * children for importing into the database.
      *
-     * @param int $osmId
+     * @param int    $osmId
      * @param string $osmType
-     * @return array    or null on error
+     *
+     * @return array or null on error
      */
     public function loadRegion($osmId, $osmType)
     {
@@ -194,41 +202,41 @@ class NominatimApi
         // no address no region
         if (!$data || empty($data['address']) || empty($data['address'][0])) {
             // @todo log warning? error message?
-            return null;
+            return;
         }
 
         $address = $data['address'][0];
         if (!$this->isAcceptedRegion($address)) {
-            return null;
+            return;
         }
 
-        $region = array(
+        $region = [
             'name'       => $address['localname'],
             'type'       => $address['type'],
             'osmType'    => $this->nominatimToOsm($address['osm_type']),
-            'osmId'      => (int)$address['osm_id'],
-            'rank'       => (int)$address['rank_address'],
-            'adminLevel' => (int)$address['admin_level'],
-            'children'   => array(),
-        );
+            'osmId'      => (int) $address['osm_id'],
+            'rank'       => (int) $address['rank_address'],
+            'adminLevel' => (int) $address['admin_level'],
+            'children'   => [],
+        ];
 
         if (empty($data['relatedPlaces'])) {
             return $region;
         }
 
-        foreach($data['relatedPlaces'] as $place) {
+        foreach ($data['relatedPlaces'] as $place) {
             if (!$this->isAcceptedRegion($place)) {
                 continue;
             }
 
-            $region['children'][] = array(
+            $region['children'][] = [
                 'name'       => $place['localname'],
                 'type'       => $place['type'],
                 'osmType'    => $this->nominatimToOsm($place['osm_type']),
-                'osmId'      => (int)$place['osm_id'],
-                'rank'       => (int)$place['rank_address'],
-                'adminLevel' => (int)$place['admin_level'],
-            );
+                'osmId'      => (int) $place['osm_id'],
+                'rank'       => (int) $place['rank_address'],
+                'adminLevel' => (int) $place['admin_level'],
+            ];
         }
 
         return $region;
@@ -238,7 +246,8 @@ class NominatimApi
      * Checks if the given place is a region we accept for our database.
      *
      * @param array $data
-     * @return boolean
+     *
+     * @return bool
      */
     protected function isAcceptedRegion($data)
     {
@@ -254,7 +263,7 @@ class NominatimApi
             return false;
         }
 
-        $acceptedPlaces = array(
+        $acceptedPlaces = [
             'administrative', // used across all ranks
             'country',        // rank 4
             // @todo the german states where all nodes, is that always the case?
@@ -265,7 +274,7 @@ class NominatimApi
             'town',           // 16
             'borough',        // 16
             'suburb',         // 20
-        );
+        ];
 
         if (!in_array($data['type'], $acceptedPlaces)) {
             return false;

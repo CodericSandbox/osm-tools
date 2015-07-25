@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -7,7 +8,7 @@
 
 namespace OsmTools\Entity;
 
-use \Gedmo\Tree\Entity\Repository\NestedTreeRepository;
+use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 
 /**
  * Holds functions to work with and manage regions.
@@ -19,7 +20,8 @@ class RegionRepository extends NestedTreeRepository
      * Calls entityManager->persist.
      *
      * @param Region $instance
-     * @param array $formData
+     * @param array  $formData
+     *
      * @return Region
      */
     public function updateInstance(Region $instance, array $formData)
@@ -28,6 +30,7 @@ class RegionRepository extends NestedTreeRepository
                 $this->getEntityManager());
         $object = $hydrator->hydrate($formData, $instance);
         $this->getEntityManager()->persist($object);
+
         return $object;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   (c) 2014, Vrok
  * @license     http://customlicense CustomLicense
@@ -21,12 +22,12 @@ class ImportController extends AbstractActionController
      */
     public function regionAction()
     {
-        $osmId = $this->params('osmid');
+        $osmId  = $this->params('osmid');
         $reader = $this->getServiceLocator()->get('OsmTools\Service\Reader');
         echo "\nimporting $osmId";
         $region = $reader->importRegion($osmId);
         if (!$region) {
-            die ("\nNo region returned for the given OSM ID!\n");
+            die("\nNo region returned for the given OSM ID!\n");
         }
 
         echo "\nimported ".$region->getName().' with '
@@ -43,23 +44,22 @@ class ImportController extends AbstractActionController
         $start = microtime(true);
 
         $reader = $this->getServiceLocator()->get('OsmTools\Service\Reader');
-        $em = $reader->getEntityManager();
-        $expr = $em->getExpressionBuilder();
-        $qb = $reader->getRegionRepository()->createQueryBuilder('r');
+        $em     = $reader->getEntityManager();
+        $expr   = $em->getExpressionBuilder();
+        $qb     = $reader->getRegionRepository()->createQueryBuilder('r');
         $qb->where($expr->eq('r.isParsed', '0'));
 
         $count = 0;
-        while($res = $reader->getRegionRepository()->findBy(
-            array('isParsed' => false), null, 150)
+        while ($res = $reader->getRegionRepository()->findBy(
+            ['isParsed' => false], null, 150)
         ) {
-            foreach($res as $region) {
+            foreach ($res as $region) {
                 $imported = $reader->importChildren($region);
                 if ($imported) {
                     echo "\nimported ".count($region->getChildren())
                         .' children for '.$region->getName();
-                    $count++;
+                    ++$count;
                 }
-
             }
 
             // we select only 150 regions and free them & their imported children
@@ -67,8 +67,8 @@ class ImportController extends AbstractActionController
             $em->clear();
         }
 
-        $end = microtime(true);
-        $duration = round($end-$start);
+        $end      = microtime(true);
+        $duration = round($end - $start);
         echo "\nloaded $count regions in $duration seconds";
 
         $deleted = $reader->clearEmptyRegions();
