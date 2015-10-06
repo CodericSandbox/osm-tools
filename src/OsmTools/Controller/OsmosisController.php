@@ -8,7 +8,7 @@
 
 namespace OsmTools\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Vrok\Mvc\Controller\AbstractActionController;
 
 class OsmosisController extends AbstractActionController
 {

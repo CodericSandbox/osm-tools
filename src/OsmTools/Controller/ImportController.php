@@ -8,7 +8,7 @@
 
 namespace OsmTools\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Vrok\Mvc\Controller\AbstractActionController;
 
 /**
  * Controller for console routes.
