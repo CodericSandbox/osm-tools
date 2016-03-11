@@ -9,12 +9,16 @@
 namespace OsmTools;
 
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\Feature\ControllerPluginProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 
 /**
  * Module bootstrapping.
  */
-class Module implements ConfigProviderInterface, ServiceProviderInterface
+class Module implements
+    ConfigProviderInterface,
+    ControllerProviderInterface,
+    ServiceProviderInterface
 {
     /**
      * Returns the modules default configuration.
@@ -24,6 +28,30 @@ class Module implements ConfigProviderInterface, ServiceProviderInterface
     public function getConfig()
     {
         return include __DIR__.'/../../config/module.config.php';
+    }
+
+    /**
+     * Return additional serviceManager config with closures that should not be
+     * in the config files to allow caching of the complete configuration.
+     *
+     * @return array
+     * @todo alle controller auf ihre dependencies prüfen und ggf direct injecten
+     */
+    public function getControllerConfig()
+    {
+        return [
+            'factories' => [
+                'OsmTools\Controller\Import' => function ($sm) {
+                    return new Controller\ImportController($sm);
+                },
+                'OsmTools\Controller\Index' => function ($sm) {
+                    return new Controller\IndexController($sm);
+                },
+                'OsmTools\Controller\Osmosis' => function ($sm) {
+                    return new Controller\OsmosisController($sm);
+                },
+            ],
+        ];
     }
 
     /**

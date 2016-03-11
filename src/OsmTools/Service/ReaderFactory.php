@@ -22,8 +22,7 @@ class ReaderFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $reader = new Reader();
-        $reader->setServiceLocator($serviceLocator);
+        $reader = new Reader($sm);
 
         $configuration = $serviceLocator->get('Config');
         $reader->setOptions(isset($configuration['osm_tools'])

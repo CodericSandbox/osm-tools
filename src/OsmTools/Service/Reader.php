@@ -11,23 +11,48 @@ namespace OsmTools\Service;
 use Doctrine\Common\Persistence\ObjectManager;
 use OsmTools\Entity\Region as RegionEntity;
 use OsmTools\Wrapper\NominatimApi;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorAwareTrait;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Contains processes for creating and managing Region objects and their
  * associated actions.
  */
-class Reader implements ServiceLocatorAwareInterface
+class Reader
 {
-    use ServiceLocatorAwareTrait;
-
     /**
      * Directory where the xml and polygon files are stored.
      *
      * @var string
      */
     protected $storageDir = 'data/osmtools';
+
+    /**
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator = null;
+
+    /**
+     * Class constructor - stores the ServiceLocator instance.
+     * We inject the locator directly as not all services are lazy loaded
+     * but some are only used in rare cases.
+     * @todo lazyload all required services and include them in the factory
+     *
+     * @param ServiceLocatorInterface $serviceLocator
+     */
+    public function __construct(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;;
+    }
+
+    /**
+     * Retrieve the stored service manager instance.
+     *
+     * @return ServiceLocatorInterface
+     */
+    private function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
 
     /**
      * Creates a new Region from the given data.

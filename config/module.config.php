@@ -49,15 +49,6 @@ return [
         ],
     ],
 // </editor-fold>
-// <editor-fold defaultstate="collapsed" desc="controllers">
-    'controllers' => [
-        'invokables' => [
-            'OsmTools\Controller\Import'  => 'OsmTools\Controller\ImportController',
-            'OsmTools\Controller\Index'   => 'OsmTools\Controller\IndexController',
-            'OsmTools\Controller\Osmosis' => 'OsmTools\Controller\OsmosisController',
-        ],
-    ],
-// </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="doctrine">
     'doctrine' => [
         'driver' => [
