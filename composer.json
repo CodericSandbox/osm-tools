@@ -1,19 +1,19 @@
 {
     "name": "vrok/osm-tools",
     "description": "OpenStreetMap Tool Library",
+    "type": "library",
     "license": "MIT",
     "homepage": "http://www.vrok.de/",
+    "keywords": ["zf2", "OSM", "geocoder", "nominatim"],
 
     "require": {
         "php": ">=5.5",
-        "doctrine/doctrine-orm-module": "~0.9.0",
-        "gedmo/doctrine-extensions": "~2.4.1",
-        "zendframework/zendframework": "~2.5.1",
+        "vrok/vrok-lib": "~0.1.1",
         "willdurand/geocoder": "~2.8"
     },
     "autoload": {
-        "psr-4": {
-            "OsmTools\\": "src/"
+        "psr-0": {
+            "OsmTools": "src/"
         }
     }
 }
