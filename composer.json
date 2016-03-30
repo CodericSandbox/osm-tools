@@ -3,7 +3,6 @@
     "description": "OpenStreetMap Tool Library",
     "license": "MIT",
     "homepage": "http://www.vrok.de/",
-    "minimum-stability": "dev",
 
     "require": {
         "php": ">=5.5",
@@ -13,8 +12,8 @@
         "willdurand/geocoder": "~2.8"
     },
     "autoload": {
-        "psr-0": {
-            "OsmTools": "src/"
+        "psr-4": {
+            "OsmTools\\": "src/"
         }
     }
 }
