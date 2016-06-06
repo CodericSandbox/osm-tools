@@ -7,9 +7,9 @@
     "keywords": ["zf2", "OSM", "geocoder", "nominatim"],
 
     "require": {
-        "php": ">=5.5",
-        "vrok/vrok-lib": "~0.1.1",
-        "willdurand/geocoder": "~2.8"
+        "php": ">=5.6",
+        "vrok/vrok-lib": "^0.2",
+        "willdurand/geocoder": "^2.8"
     },
     "autoload": {
         "psr-4": {
