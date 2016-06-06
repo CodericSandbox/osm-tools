@@ -12,8 +12,8 @@
         "willdurand/geocoder": "~2.8"
     },
     "autoload": {
-        "psr-0": {
-            "OsmTools": "src/"
+        "psr-4": {
+            "OsmTools\\": "src/"
         }
     }
 }
