@@ -26,9 +26,12 @@ abstract class GeoCalculations
      *
      * @return float Distance between points in kilometers
      */
-    public static function haversineDistance($latitudeFrom, $longitudeFrom,
-                                             $latitudeTo, $longitudeTo)
-    {
+    public static function haversineDistance(
+        $latitudeFrom,
+        $longitudeFrom,
+        $latitudeTo,
+        $longitudeTo
+    ) {
         $earthRadius = 6372.8;
 
         // convert from degrees to radians

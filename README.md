@@ -1,7 +1,7 @@
 osm-tools
 =========
 
-ZF2 Module providing an Osmosis wrapper and other classes to handle OpenStreetMap data.
+ZF3 Module providing an Osmosis wrapper and other classes to handle OpenStreetMap data.
 
 Allows to query a Nominatim instance to build a tree of regions
 (e.g. countries > states > counties > cities)

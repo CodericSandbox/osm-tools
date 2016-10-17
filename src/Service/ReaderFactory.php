@@ -8,23 +8,24 @@
 
 namespace OsmTools\Service;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
 class ReaderFactory implements FactoryInterface
 {
     /**
-     * Creates an instance of the translation service, injects the dependencies.
+     * Inject the dependencies into the new service instance.
      *
-     * @param ServiceLocatorInterface $serviceLocator
-     *
+     * @param ContainerInterface $container
+     * @param string $requestedName
+     * @param array $options
      * @return Reader
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $reader = new Reader($sm);
+        $reader = new Reader($container);
 
-        $configuration = $serviceLocator->get('Config');
+        $configuration = $container->get('Config');
         $reader->setOptions(isset($configuration['osm_tools'])
             ? $configuration['osm_tools']
             : []
